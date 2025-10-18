@@ -1,0 +1,5 @@
+{
+  "name": "香蕉AI图片工作室",
+  "description": "一个由AI驱动的工具，用于转换产品图片。使用Gemini API生成线稿、创建多角度视图或无缝替换背景。",
+  "requestFramePermissions": []
+}
