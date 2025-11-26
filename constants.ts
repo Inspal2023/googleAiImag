@@ -25,6 +25,13 @@ export const BACKGROUND_PROMPTS = {
     hybrid: '' // Dynamic prompt generation logic is now handled in geminiService.ts
 };
 
+export const PROMPT_OPTIMIZATION_INSTRUCTION = `你是一个富有创意的AI助手，专门为AI绘画工具优化用户输入的背景描述。你的任务是：
+1. 理解用户的核心意图。
+2. 将简单、模糊的描述变得更具体、生动、富有画面感。
+3. 添加能提升图片质量的细节，如光线、氛围、材质、构图等。
+4. 保持描述简洁、清晰，适合AI模型理解。
+5. 仅返回优化后的描述文本，不要包含任何额外的解释或前缀，如“优化后的描述：”。`;
+
 export const LINE_ART_OPTS = {
     types: {
         engineering: '严格的工程制图风格，强调结构准确性、透视和比例。适用于技术手册或专利图。',

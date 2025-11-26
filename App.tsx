@@ -43,6 +43,12 @@ const App: React.FC = () => {
   const [viewPitch, setViewPitch] = React.useState<ViewPitch>(0);
   const [viewYaw, setViewYaw] = React.useState<ViewYaw>(30);
 
+  // Clear result when switching features
+  React.useEffect(() => {
+    setResultImageUrl(null);
+    setError(null);
+  }, [selectedFeature]);
+
 
   const handleImageUpload = React.useCallback((file: File, dataUrl: string) => {
     setSourceImage(file);

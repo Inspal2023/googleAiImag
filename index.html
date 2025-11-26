@@ -26,6 +26,22 @@
     background-attachment: fixed;
   }
   
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.5);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 5px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.4);
+  }
+
   /* 3D Glass Utilities */
   .glass-panel {
     background: rgba(255, 255, 255, 0.65);

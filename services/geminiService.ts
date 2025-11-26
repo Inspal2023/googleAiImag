@@ -1,6 +1,6 @@
 import { GoogleGenAI, Modality, HarmCategory, HarmBlockThreshold } from "@google/genai";
 import type { Feature, BackgroundMode, LineArtType, DetailLevel, LineStyle, MultiViewMode, ViewPitch, ViewYaw, FusionParams } from '../types';
-import { FEATURE_CONFIG, BACKGROUND_PROMPTS, LINE_ART_OPTS, MULTI_VIEW_OPTS } from '../constants';
+import { FEATURE_CONFIG, BACKGROUND_PROMPTS, LINE_ART_OPTS, MULTI_VIEW_OPTS, PROMPT_OPTIMIZATION_INSTRUCTION } from '../constants';
 
 const API_KEY = process.env.API_KEY;
 
@@ -34,18 +34,18 @@ export const optimizePrompt = async (prompt: string): Promise<string> => {
         return prompt;
     }
     try {
-        const systemInstruction = `你是一个富有创意的AI助手，专门为AI绘画工具优化用户输入的背景描述。你的任务是：
-1.  理解用户的核心意图。
-2.  将简单、模糊的描述变得更具体、生动、富有画面感。
-3.  添加能提升图片质量的细节，如光线、氛围、材质、构图等。
-4.  保持描述简洁、清晰，适合AI模型理解。
-5.  仅返回优化后的描述文本，不要包含任何额外的解释或前缀，如“优化后的描述：”。
-
-用户输入：${prompt}`;
+        const systemInstruction = PROMPT_OPTIMIZATION_INSTRUCTION;
+        const inputContent = `用户输入：${prompt}`;
 
         const response = await ai.models.generateContent({
             model: 'gemini-3-pro-preview',
-            contents: systemInstruction,
+            contents: {
+                role: 'user',
+                parts: [{ text: inputContent }]
+            },
+            config: {
+                systemInstruction: systemInstruction
+            }
         });
 
         const optimizedText = response.text || '';
