@@ -130,24 +130,31 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen text-slate-800">
+    <div className="min-h-screen text-slate-700 pb-20">
       <Header />
       <main className="container mx-auto px-4 py-8">
          <div className="max-w-6xl mx-auto">
-            <p className="text-center text-lg text-slate-600 mb-8">
-              选择一个功能，上传您的产品图片，让AI来施展魔法。
-            </p>
             
             <FeatureSelector selectedFeature={selectedFeature} onSelectFeature={setSelectedFeature} />
 
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-              <div className="bg-white p-6 rounded-lg shadow-[6px_6px_0px_#475569] border-2 border-slate-800">
-                <h2 className="text-xl font-bold mb-4 text-slate-700">1. 上传主体图片</h2>
-                <ImageUploader onImageUpload={handleImageUpload} sourceImageUrl={sourceImageUrl} id="product-image-upload" />
+            <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              
+              {/* Left Panel: Inputs */}
+              <div className="glass-panel rounded-3xl p-8 space-y-8 animate-fade-in-up">
+                <div>
+                    <h2 className="text-lg font-bold mb-4 text-slate-800 flex items-center">
+                        <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs mr-2">1</span>
+                        上传主体图片
+                    </h2>
+                    <ImageUploader onImageUpload={handleImageUpload} sourceImageUrl={sourceImageUrl} id="product-image-upload" />
+                </div>
 
                 {selectedFeature === 'backgroundChange' && (
-                  <div className="mt-6 space-y-6">
-                      <h2 className="text-xl font-bold text-slate-700">2. 融合模式设置</h2>
+                  <div className="space-y-6 pt-6 border-t border-slate-200/50">
+                      <h2 className="text-lg font-bold text-slate-800 flex items-center">
+                         <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs mr-2">2</span>
+                         融合模式设置
+                      </h2>
                       <BackgroundModeSelector selectedMode={backgroundMode} onSelectMode={setBackgroundMode} disabled={isLoading || isOptimizing} />
                       
                       {/* Text Mode Options */}
@@ -164,8 +171,8 @@ const App: React.FC = () => {
                       {/* Image / Hybrid Reference Upload */}
                       {(backgroundMode === 'image' || backgroundMode === 'hybrid') && (
                           <div>
-                              <label className="block text-sm font-medium text-slate-700 mb-1">
-                                {backgroundMode === 'hybrid' ? '上传参考特征图片 (被融合对象)' : '上传参考背景图'}
+                              <label className="block text-sm font-medium text-slate-600 mb-2">
+                                {backgroundMode === 'hybrid' ? '参考特征图片 (被融合对象)' : '参考背景图'}
                               </label>
                               <ImageUploader onImageUpload={handleBackgroundImageUpload} sourceImageUrl={backgroundImageUrl} id="background-image-upload" />
                           </div>
@@ -183,8 +190,11 @@ const App: React.FC = () => {
                 )}
 
                 {selectedFeature === 'lineArt' && (
-                   <div className="mt-6 space-y-4">
-                      <h2 className="text-xl font-bold text-slate-700">2. 线稿设置</h2>
+                   <div className="space-y-6 pt-6 border-t border-slate-200/50">
+                      <h2 className="text-lg font-bold text-slate-800 flex items-center">
+                        <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs mr-2">2</span>
+                        线稿设置
+                      </h2>
                       <LineArtSettings 
                         lineArtType={lineArtType} setLineArtType={setLineArtType}
                         detailLevel={detailLevel} setDetailLevel={setDetailLevel}
@@ -195,8 +205,11 @@ const App: React.FC = () => {
                 )}
 
                 {selectedFeature === 'multiView' && (
-                   <div className="mt-6 space-y-4">
-                      <h2 className="text-xl font-bold text-slate-700">2. 视角设置</h2>
+                   <div className="space-y-6 pt-6 border-t border-slate-200/50">
+                      <h2 className="text-lg font-bold text-slate-800 flex items-center">
+                        <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs mr-2">2</span>
+                        视角设置
+                      </h2>
                       <MultiViewSettings 
                         mode={multiViewMode} setMode={setMultiViewMode}
                         pitch={viewPitch} setPitch={setViewPitch}
@@ -206,24 +219,49 @@ const App: React.FC = () => {
                    </div>
                 )}
                 
-                <button
-                  onClick={handleGenerate}
-                  disabled={isGenerateDisabled()}
-                  className="w-full mt-6 bg-sky-500 text-white font-bold py-3 px-4 rounded-lg border-2 border-slate-800 shadow-[4px_4px_0px_#0f172a] hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-all duration-150 active:shadow-none active:translate-y-1 active:translate-x-1 disabled:bg-slate-300 disabled:shadow-none disabled:text-slate-500 disabled:cursor-not-allowed flex items-center justify-center"
-                >
-                  {isLoading ? (
-                      <>
-                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 80 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          生成中...
-                      </>
-                  ) : (selectedFeature === 'backgroundChange' && backgroundMode === 'hybrid' ? '融合生成新产品' : '生成图片')}
-                </button>
+                <div className="pt-4">
+                    <button
+                    onClick={handleGenerate}
+                    disabled={isGenerateDisabled()}
+                    className={`
+                        w-full py-4 px-6 rounded-2xl font-bold text-lg shadow-lg transition-all duration-300 transform
+                        flex items-center justify-center relative overflow-hidden group
+                        ${isGenerateDisabled() 
+                            ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' 
+                            : 'bg-gradient-to-r from-sky-400 to-indigo-500 text-white hover:shadow-sky-500/30 hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98]'
+                        }
+                    `}
+                    >
+                    <span className="relative z-10 flex items-center">
+                        {isLoading ? (
+                            <>
+                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 80 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                正在进行AI渲染...
+                            </>
+                        ) : (
+                            <>
+                            {selectedFeature === 'backgroundChange' && backgroundMode === 'hybrid' ? '开始融合生成' : '生成图片'}
+                            {!isGenerateDisabled() && (
+                                <svg className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                            )}
+                            </>
+                        )}
+                    </span>
+                    {!isGenerateDisabled() && (
+                        <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-700 ease-in-out -skew-x-12 -translate-x-full" />
+                    )}
+                    </button>
+                </div>
               </div>
               
-              <ResultDisplay resultImageUrl={resultImageUrl} isLoading={isLoading} error={error} onImageClick={handleOpenModal} />
+              {/* Right Panel: Result */}
+              <div className="lg:sticky lg:top-24">
+                <ResultDisplay resultImageUrl={resultImageUrl} isLoading={isLoading} error={error} onImageClick={handleOpenModal} />
+              </div>
+
             </div>
           </div>
       </main>

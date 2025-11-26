@@ -1,4 +1,4 @@
-import { GoogleGenAI, Modality } from "@google/genai";
+import { GoogleGenAI, Modality, HarmCategory, HarmBlockThreshold } from "@google/genai";
 import type { Feature, BackgroundMode, LineArtType, DetailLevel, LineStyle, MultiViewMode, ViewPitch, ViewYaw, FusionParams } from '../types';
 import { FEATURE_CONFIG, BACKGROUND_PROMPTS, LINE_ART_OPTS, MULTI_VIEW_OPTS } from '../constants';
 
@@ -44,7 +44,7 @@ export const optimizePrompt = async (prompt: string): Promise<string> => {
 用户输入：${prompt}`;
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-3-pro-preview',
             contents: systemInstruction,
         });
 
@@ -153,60 +153,68 @@ export const generateImage = async (
         4. 通用要求：背景必须是纯白色。线条清晰。保持产品原有透视。`;
     } else if (feature === 'multiView') {
         if (multiViewMode === 'three-view') {
-            textPrompt = FEATURE_CONFIG.multiView.prompt;
+            textPrompt = `Role: Technical Illustrator / Industrial Designer.
+            Task: Create a standard Orthographic Projection Three-View Drawing (三视图) of the input product.
+            
+            Requirements:
+            1. **Layout**: Arrange three distinct views on a clean white background:
+               - Top View (Plan View)
+               - Front View (Elevation)
+               - Side View (Profile)
+            2. **Perspective**: Use Parallel Projection (Orthographic). Do NOT use linear perspective. Lines should be parallel.
+            3. **Consistency**: Ensure all three views represent the EXACT same object with consistent proportions and details.
+            4. **Style**: Clean, technical presentation suitable for design documentation.`;
         } else {
-            // Free Perspective Mode
-            // Generate detailed camera position description to help the model understand 3D space.
-            let cameraPositionDesc = "";
+            // Free Perspective Mode - Optimized for Natural Language Flow
             
-            // Logic: Re-calibrated for optical accuracy.
+            let angleDescription = "";
+            let perspectiveRules = "";
             
+            // 1. Define the Vertical Angle (Pitch) with visual consequences
             if (viewPitch === -90) {
-                 cameraPositionDesc = "Strict Top-Down View (90° Overhead / Plan View). The camera looks directly perpendicular to the ground. Render as a 2D technical layout. No side walls should be visible unless the object tapers outward. Zero vertical perspective distortion.";
+                 angleDescription = "A direct top-down Plan View (Technical Flat Lay).";
+                 perspectiveRules = "The image must be completely flat (2D). No vertical sides of the product should be visible. This is a technical layout view.";
             } else if (viewPitch === -60) {
-                 cameraPositionDesc = "Steep High Angle (60° Elevation / Bird's Eye). Camera is positioned high above the subject. The Top Surface dominates the composition (occupying ~70% of visual area). Vertical sides are visible but strongly foreshortened (converging downwards).";
+                 angleDescription = "A high-angle Bird's-Eye View (looking down steeply).";
+                 perspectiveRules = "The top surface of the product should dominate the composition. Vertical sides are visible but short due to strong foreshortening.";
             } else if (viewPitch === -30) {
-                 cameraPositionDesc = "Standard Product Photography Angle (30° Elevation). A natural commercial viewing angle. The Top Surface is visible but foreshortened compared to the front face. Good balance between showing the top features and the silhouette.";
+                 angleDescription = "A standard commercial product photography angle (slightly above eye level).";
+                 perspectiveRules = "This is the most natural viewing angle. Show a balanced view of both the top features and the front/side profile.";
             } else { // 0
-                 cameraPositionDesc = "Eye-Level / Straight-On View (0° Elevation). The camera lens is parallel to the ground at the object's center height. The Horizon Line cuts through the middle of the product. The Top Surface MUST be hidden (represented as a flat line). Vertical lines should be parallel (2-Point Perspective).";
+                 angleDescription = "A strict Eye-Level View (Horizon Line shot).";
+                 perspectiveRules = "The camera is parallel to the ground. The top surface of the product must be COMPLETELY HIDDEN (flattened to a line). Vertical lines should be perfectly vertical.";
             }
 
-            // Enhanced Yaw Logic with descriptive text for precision
-            let rotationDesc = "";
+            // 2. Define the Horizontal Rotation (Yaw)
+            let rotationDescription = "";
             switch (viewYaw) {
                 case 0:
-                    rotationDesc = "Front View (0°). Directly facing the front. Symmetrical if the object is symmetrical.";
+                    rotationDescription = "facing directly forward (Front View).";
                     break;
                 case 30:
-                    rotationDesc = "Front-Right 3/4 View (30°). Mainly front face, revealing the right side depth.";
+                    rotationDescription = "rotated slightly to reveal the right side (Front-Right 3/4 View).";
                     break;
                 case 60:
-                    rotationDesc = "Front-Right Side View (60°). Mainly right side, retaining the front edge features.";
+                    rotationDescription = "rotated significantly to emphasize the side profile (Side-Dominant View).";
                     break;
                 case 90:
-                    rotationDesc = "Right Profile View (90°). Directly facing the right side. Orthogonal to the front view.";
+                    rotationDescription = "facing directly to the right (Side Profile View).";
                     break;
                 default:
-                    rotationDesc = `Rotated ${viewYaw} degrees clockwise.`;
+                    rotationDescription = `rotated ${viewYaw} degrees clockwise.`;
             }
 
-            textPrompt = `根据提供的产品图片，重新渲染一张该产品的单视角图片。
+            textPrompt = `Role: Expert Product Photographer.
+            Task: Re-photograph the input product from a specific new camera angle.
             
-            相机位置设定 (Camera & Geometric Setup):
-            1. **垂直高度 (Pitch ${viewPitch}°)**: ${cameraPositionDesc}
-            2. **水平角度 (Yaw ${viewYaw}°)**: ${rotationDesc}
-
-            关键透视规则 (Critical Perspective Rules):
-            1. **透视重构 (Perspective Reconstruction)**: 必须根据新的相机高度重新计算消点 (Vanishing Points) 和透视缩短 (Foreshortening)。
-            2. **几何准确性 (Geometric Accuracy)**:
-               - [-90° 顶视]: 必须是平面图效果。完全不展示高度信息。
-               - [-60° 深俯视]: 顶部面积 >> 侧面面积。垂直线条有明显的向下收敛趋势。
-               - [-30° 浅俯视]: 侧面轮廓清晰，顶部可见但压扁。符合人眼日常观察物体的角度。
-               - [0° 平视]: 严禁展示顶部平面。所有垂直结构线必须垂直于地平线，无纵向透视收敛。
-            3. **空间一致性**: 产品必须保持物理直立，只改变观察者的位置。
-            4. **细节保持**: 严格保留原图的设计语言、材质反光特性和Logo位置（根据旋转调整Logo可见性）。
-            5. **完整性补全**: 如果新视角展示了原图不可见的侧面/背面，请根据产品风格逻辑进行合理推演补全。
-            6. **背景扩展**: 根据新的视平线高度，自然调整和扩展背景。`;
+            Target Shot Description:
+            "Capture the product from ${angleDescription} It should be ${rotationDescription}"
+            
+            Critical Rules:
+            1. **Visual Geometry**: ${perspectiveRules}
+            2. **Identity Consistency**: The generated object must differ ONLY in angle. Maintain the exact same design, materials, colors, and logo placement as the reference image.
+            3. **Background**: Extend the background naturally to fit the new perspective, or keep it clean studio white if the original is simple.
+            4. **Lighting**: Adjust reflections and shadows to match the new camera position.`;
         }
     }
 
@@ -220,6 +228,12 @@ export const generateImage = async (
             contents,
             config: {
                 responseModalities: [Modality.IMAGE],
+                safetySettings: [
+                    { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
+                    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
+                    { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
+                    { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
+                ],
             },
         });
 
@@ -235,10 +249,19 @@ export const generateImage = async (
             }
         }
         
-        // If no image parts, check for a finishReason (e.g. SAFETY, OTHER)
+        // If no image parts, check for a finishReason (e.g. SAFETY, OTHER, IMAGE_OTHER)
         const finishReason = response.candidates?.[0]?.finishReason;
         if (finishReason) {
-            throw new Error(`生成失败，原因: ${finishReason} (模型拒绝了请求)`);
+            let errorMsg = `生成失败 (原因: ${finishReason})`;
+            // Convert to string to safely compare with possible enum values
+            const reasonStr = String(finishReason);
+            
+            if (reasonStr === 'OTHER' || reasonStr === 'IMAGE_OTHER') {
+                errorMsg = '生成失败：模型拒绝了请求 (IMAGE_OTHER)。这通常是因为内容触发了严格的过滤（如人像、版权或敏感内容）。请尝试更换图片（避免清晰人脸）或简化描述。';
+            } else if (reasonStr === 'SAFETY') {
+                errorMsg = '生成失败：内容触发了安全警告。请检查您的图片或提示词是否包含敏感内容。';
+            }
+            throw new Error(errorMsg);
         }
 
         throw new Error('响应中未生成任何图片。');

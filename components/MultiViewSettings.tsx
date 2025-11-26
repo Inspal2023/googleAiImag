@@ -34,18 +34,18 @@ export const MultiViewSettings: React.FC<MultiViewSettingsProps> = ({
     };
 
     return (
-        <div className="bg-slate-50 p-4 rounded-lg border-2 border-slate-200 space-y-4">
+        <div className="bg-white/50 border border-white/60 p-5 rounded-2xl shadow-sm backdrop-blur-sm space-y-5">
             {/* Mode Selection */}
             <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">视图模式</label>
-                <div className="flex space-x-2">
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">视图模式</label>
+                <div className="flex space-x-2 bg-slate-100/50 p-1 rounded-xl border border-slate-200">
                     <button
                         onClick={() => setMode('three-view')}
                         disabled={disabled}
-                        className={`flex-1 px-4 py-2 text-sm font-bold rounded-md border-2 transition-all ${
+                        className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
                             mode === 'three-view'
-                                ? 'bg-amber-100 border-slate-800 text-slate-800 shadow-[2px_2px_0px_#475569] -translate-y-[1px]'
-                                : 'bg-white border-slate-300 text-slate-500 hover:border-slate-400'
+                                ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5'
+                                : 'text-slate-500 hover:bg-slate-200/50'
                         }`}
                     >
                         标准三视图
@@ -53,10 +53,10 @@ export const MultiViewSettings: React.FC<MultiViewSettingsProps> = ({
                     <button
                         onClick={() => setMode('free-perspective')}
                         disabled={disabled}
-                        className={`flex-1 px-4 py-2 text-sm font-bold rounded-md border-2 transition-all ${
+                        className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
                             mode === 'free-perspective'
-                                ? 'bg-amber-100 border-slate-800 text-slate-800 shadow-[2px_2px_0px_#475569] -translate-y-[1px]'
-                                : 'bg-white border-slate-300 text-slate-500 hover:border-slate-400'
+                                ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5'
+                                : 'text-slate-500 hover:bg-slate-200/50'
                         }`}
                     >
                         自由视角
@@ -66,10 +66,10 @@ export const MultiViewSettings: React.FC<MultiViewSettingsProps> = ({
 
             {/* Free Perspective Options */}
             {mode === 'free-perspective' && (
-                <div className="animate-fade-in space-y-4 pt-2 border-t border-slate-200">
+                <div className="animate-fade-in space-y-4 pt-4 border-t border-slate-200/60">
                     <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">
-                            垂直角度 (俯视程度)
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                            垂直角度 (俯视)
                         </label>
                         <div className="grid grid-cols-4 gap-2">
                             {pitchOptions.map((p) => (
@@ -78,9 +78,9 @@ export const MultiViewSettings: React.FC<MultiViewSettingsProps> = ({
                                     onClick={() => setPitch(p)}
                                     disabled={disabled}
                                     title={getPitchLabel(p)}
-                                    className={`flex items-center justify-center py-2 text-xs font-bold rounded border-2 transition-all ${
+                                    className={`flex items-center justify-center py-2 text-xs font-bold rounded-lg border transition-all ${
                                         pitch === p
-                                            ? 'bg-sky-100 border-sky-600 text-sky-700 z-10 scale-110'
+                                            ? 'bg-indigo-50 border-indigo-200 text-indigo-600 ring-1 ring-indigo-200'
                                             : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                                     }`}
                                 >
@@ -88,36 +88,28 @@ export const MultiViewSettings: React.FC<MultiViewSettingsProps> = ({
                                 </button>
                             ))}
                         </div>
-                        <div className="mt-1 flex justify-between text-xs text-slate-400 px-1">
-                            <span>顶视 (-90°)</span>
-                            <span>平视 (0°)</span>
-                        </div>
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                             水平旋转 (顺时针)
                         </label>
-                        <div className="grid grid-cols-4 gap-1">
+                        <div className="grid grid-cols-4 gap-2">
                             {yawOptions.map((y) => (
                                 <button
                                     key={y}
                                     onClick={() => setYaw(y)}
                                     disabled={disabled}
                                     title={getYawLabel(y)}
-                                    className={`flex items-center justify-center py-2 text-xs font-bold rounded border-2 transition-all ${
+                                    className={`flex items-center justify-center py-2 text-xs font-bold rounded-lg border transition-all ${
                                         yaw === y
-                                            ? 'bg-sky-100 border-sky-600 text-sky-700 z-10 scale-110'
+                                            ? 'bg-indigo-50 border-indigo-200 text-indigo-600 ring-1 ring-indigo-200'
                                             : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                                     }`}
                                 >
                                     {y}°
                                 </button>
                             ))}
-                        </div>
-                        <div className="mt-1 flex justify-between text-xs text-slate-400 px-1">
-                            <span>正面</span>
-                            <span>侧面</span>
                         </div>
                     </div>
                 </div>

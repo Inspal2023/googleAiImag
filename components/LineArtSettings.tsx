@@ -19,8 +19,8 @@ export const LineArtSettings: React.FC<LineArtSettingsProps> = ({
 }) => {
     
     const typeOptions: {id: LineArtType; name: string}[] = [
-        { id: 'engineering', name: '工程线稿图' },
-        { id: 'concept', name: '概念线稿图' }
+        { id: 'engineering', name: '工程制图' },
+        { id: 'concept', name: '概念草图' }
     ];
 
     const detailOptions: {id: DetailLevel; name: string}[] = [
@@ -41,19 +41,23 @@ export const LineArtSettings: React.FC<LineArtSettingsProps> = ({
         currentValue: T, 
         onChange: (val: T) => void
     ) => (
-        <div className="mb-4 last:mb-0">
-            <label className="block text-sm font-medium text-slate-700 mb-2">{label}</label>
+        <div className="mb-5 last:mb-0">
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{label}</label>
             <div className="flex flex-wrap gap-2">
                 {options.map((opt) => (
                     <button
                         key={opt.id}
                         onClick={() => onChange(opt.id)}
                         disabled={disabled}
-                        className={`flex-1 min-w-[80px] px-3 py-2 text-sm font-semibold rounded-md border-2 transition-all duration-150 ${
+                        className={`
+                            flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-all duration-200
+                            ${
                             currentValue === opt.id
-                                ? 'bg-amber-100 border-slate-800 text-slate-800 shadow-[2px_2px_0px_#475569] -translate-y-[1px]'
-                                : 'bg-white border-slate-300 text-slate-500 hover:border-slate-400 hover:text-slate-600'
-                        } disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0`}
+                                ? 'bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm ring-1 ring-indigo-200'
+                                : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:border-slate-300'
+                            } 
+                            disabled:opacity-50 disabled:cursor-not-allowed
+                        `}
                     >
                         {opt.name}
                     </button>
@@ -63,7 +67,7 @@ export const LineArtSettings: React.FC<LineArtSettingsProps> = ({
     );
 
     return (
-        <div className="bg-slate-50 p-4 rounded-lg border-2 border-slate-200">
+        <div className="bg-white/50 border border-white/60 p-5 rounded-2xl shadow-sm backdrop-blur-sm">
             {renderOptionGroup('类型', typeOptions, lineArtType, setLineArtType)}
             {renderOptionGroup('细节程度', detailOptions, detailLevel, setDetailLevel)}
             {renderOptionGroup('风格', styleOptions, lineStyle, setLineStyle)}

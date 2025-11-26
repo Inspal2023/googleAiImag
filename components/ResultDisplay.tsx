@@ -8,35 +8,39 @@ interface ResultDisplayProps {
 }
 
 const Placeholder = () => (
-    <div className="w-full h-full flex flex-col items-center justify-center text-center p-8">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 14.5M14.25 3.104c.251.023.501.05.75.082M19.8 14.5L14.25 10m-8.25 0l7.5 7.5h3.75a2.25 2.25 0 002.25-2.25v-3.75L16.5 10M9.75 16.5h1.5a1.5 1.5 0 011.5 1.5v1.5a1.5 1.5 0 01-1.5 1.5h-1.5a1.5 1.5 0 01-1.5-1.5v-1.5a1.5 1.5 0 011.5-1.5z" />
-        </svg>
-        <h3 className="mt-4 text-lg font-medium text-slate-800">您的结果将显示在此处</h3>
-        <p className="mt-1 text-sm text-slate-500">
-            生成图片后，它将显示在此面板中。
+    <div className="text-center p-8 opacity-60">
+        <div className="w-24 h-24 mx-auto bg-gradient-to-tr from-slate-100 to-white rounded-full flex items-center justify-center shadow-inner mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-slate-600">等待生成</h3>
+        <p className="mt-2 text-sm text-slate-400 max-w-xs mx-auto">
+            AI 生成的艺术作品将以高清质量展示在此处
         </p>
     </div>
 );
 
 const Loader = () => (
-    <div className="w-full h-full flex flex-col items-center justify-center p-8">
-        <svg className="animate-spin h-12 w-12 text-sky-500" xmlns="http://www.w.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <p className="mt-4 text-slate-600">正在生成您的图片...</p>
-        <p className="mt-1 text-sm text-slate-500">这可能需要一些时间。</p>
+    <div className="flex flex-col items-center justify-center p-8">
+        <div className="relative w-20 h-20">
+             <div className="absolute inset-0 rounded-full border-4 border-slate-100"></div>
+             <div className="absolute inset-0 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
+        </div>
+        <h3 className="mt-6 text-lg font-semibold text-slate-700">正在渲染</h3>
+        <p className="mt-1 text-sm text-slate-500">AI 正在构思像素细节...</p>
     </div>
 );
 
 const ErrorDisplay = ({ message }: { message: string }) => (
-    <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 bg-red-200 border-red-500 border-2 border-dashed rounded-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 className="mt-4 text-lg font-bold text-red-700">发生错误</h3>
-        <p className="mt-1 text-sm text-red-600">
+    <div className="text-center p-8 max-w-sm">
+        <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4 text-red-500">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+        </div>
+        <h3 className="text-lg font-bold text-slate-800">出错了</h3>
+        <p className="mt-2 text-sm text-slate-600 bg-red-50 p-3 rounded-lg border border-red-100">
             {message}
         </p>
     </div>
@@ -44,29 +48,37 @@ const ErrorDisplay = ({ message }: { message: string }) => (
 
 export const ResultDisplay: React.FC<ResultDisplayProps> = ({ resultImageUrl, isLoading, error, onImageClick }) => {
   return (
-    <div className="bg-white rounded-lg shadow-[6px_6px_0px_#475569] border-2 border-slate-800 aspect-square flex flex-col">
-      <h2 className="text-xl font-bold p-6 pb-2 text-slate-700">生成结果</h2>
-      <div className="flex-grow p-6 pt-2 flex items-center justify-center">
-        <div className="w-full h-full bg-amber-100 rounded-lg flex items-center justify-center border-2 border-slate-800">
-            {isLoading ? <Loader /> :
-             error ? <ErrorDisplay message={error} /> :
-             resultImageUrl ? (
-                <div className="relative group w-full h-full" onClick={onImageClick}>
-                    <img src={resultImageUrl} alt="生成结果" className="w-full h-full object-contain rounded-lg cursor-zoom-in" />
+    <div className="glass-panel rounded-3xl p-2 h-full min-h-[500px] flex flex-col relative overflow-hidden transition-all duration-500">
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-50"></div>
+      
+      <div className="flex-1 rounded-2xl bg-white/50 backdrop-blur-sm border border-white/40 flex items-center justify-center overflow-hidden relative group">
+          
+          {/* Background Grid Pattern */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#64748b 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+
+          {isLoading ? <Loader /> :
+           error ? <ErrorDisplay message={error} /> :
+           resultImageUrl ? (
+            <>
+                <img 
+                    src={resultImageUrl} 
+                    alt="生成结果" 
+                    onClick={onImageClick}
+                    className="max-w-full max-h-full object-contain cursor-zoom-in drop-shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]" 
+                />
+                <div className="absolute bottom-6 flex space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
                     <a
                         href={resultImageUrl}
-                        download="generated-image.png"
+                        download="ai-generated-image.png"
                         onClick={(e) => e.stopPropagation()}
-                        className="absolute bottom-4 right-4 bg-sky-500 text-white p-3 rounded-full shadow-[2px_2px_0px_#1e293b] border-2 border-slate-800 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-sky-600 active:shadow-none active:translate-y-0.5 active:translate-x-0.5"
-                        title="下载图片"
+                        className="bg-white/90 backdrop-blur text-slate-700 hover:text-indigo-600 px-4 py-2 rounded-full shadow-lg border border-white/50 text-sm font-medium flex items-center gap-2 transition-transform hover:scale-105"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        下载
                     </a>
                 </div>
-             ) : <Placeholder />}
-        </div>
+            </>
+           ) : <Placeholder />}
       </div>
     </div>
   );

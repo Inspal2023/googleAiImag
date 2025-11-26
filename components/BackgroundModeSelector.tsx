@@ -15,17 +15,20 @@ const modes: { id: BackgroundMode; name: string }[] = [
 
 export const BackgroundModeSelector: React.FC<BackgroundModeSelectorProps> = ({ selectedMode, onSelectMode, disabled }) => {
   return (
-    <div className="flex items-center justify-center space-x-2 rounded-lg bg-slate-200 border-2 border-slate-800 p-1 mb-4">
+    <div className="bg-slate-100/50 p-1 rounded-xl flex space-x-1 border border-slate-200 shadow-inner">
       {modes.map((mode) => (
         <button
           key={mode.id}
           onClick={() => onSelectMode(mode.id)}
           disabled={disabled}
-          className={`w-full px-3 py-2 text-sm font-semibold rounded-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-200 focus:ring-sky-500 ${
-            selectedMode === mode.id
-              ? 'bg-white text-sky-600 shadow-[2px_2px_0px_#475569] border-0'
-              : 'text-slate-600 hover:bg-slate-300'
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
+          className={`
+            flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200
+            ${selectedMode === mode.id
+              ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
+            }
+            disabled:opacity-50 disabled:cursor-not-allowed
+          `}
         >
           {mode.name}
         </button>

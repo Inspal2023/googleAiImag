@@ -1,21 +1,18 @@
 import React from 'react';
 import type { Feature, FeatureConfig } from './types';
 
-// FIX: Replaced JSX with React.createElement to be valid in a .ts file.
 const LineArtIcon = () => React.createElement(
     'svg',
     { xmlns: "http://www.w3.org/2000/svg", className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 2 },
     React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" })
 );
 
-// FIX: Replaced JSX with React.createElement to be valid in a .ts file.
 const MultiViewIcon = () => React.createElement(
     'svg',
     { xmlns: "http://www.w3.org/2000/svg", className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 2 },
     React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", d: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" })
 );
 
-// FIX: Replaced JSX with React.createElement to be valid in a .ts file.
 const BackgroundIcon = () => React.createElement(
     'svg',
     { xmlns: "http://www.w3.org/2000/svg", className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 2 },

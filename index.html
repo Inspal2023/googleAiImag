@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script type="importmap">
 {
   "imports": {
@@ -21,11 +21,41 @@
 </script>
 <style>
   body {
-    font-family: 'ZCOOL KuaiLe', cursive;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 50%, #f3e8ff 100%);
+    background-attachment: fixed;
+  }
+  
+  /* 3D Glass Utilities */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.6);
+  }
+  
+  .glass-card {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  }
+
+  .btn-3d {
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    box-shadow: 5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff;
+    border: 1px solid rgba(255,255,255,0.8);
+  }
+  
+  .btn-3d-active {
+    background: linear-gradient(145deg, #38bdf8, #0ea5e9);
+    color: white;
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1), 0 4px 10px rgba(56, 189, 248, 0.4);
   }
 </style>
 </head>
-  <body class="bg-amber-100">
+  <body>
     <div id="root"></div>
   </body>
 </html>
