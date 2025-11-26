@@ -5,9 +5,12 @@ import { ImageUploader } from './components/ImageUploader';
 import { PromptInput } from './components/PromptInput';
 import { ResultDisplay } from './components/ResultDisplay';
 import { generateImage, optimizePrompt } from './services/geminiService';
-import type { Feature, BackgroundMode } from './types';
+import type { Feature, BackgroundMode, LineArtType, DetailLevel, LineStyle, MultiViewMode, ViewPitch, ViewYaw, FusionParams } from './types';
 import { BackgroundModeSelector } from './components/BackgroundModeSelector';
 import { ImageModal } from './components/ImageModal';
+import { LineArtSettings } from './components/LineArtSettings';
+import { MultiViewSettings } from './components/MultiViewSettings';
+import { ProductFusionSettings } from './components/ProductFusionSettings';
 
 const App: React.FC = () => {
   const [selectedFeature, setSelectedFeature] = React.useState<Feature>('lineArt');
@@ -19,10 +22,26 @@ const App: React.FC = () => {
   const [error, setError] = React.useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
   
+  // Background / Fusion State
   const [backgroundMode, setBackgroundMode] = React.useState<BackgroundMode>('prompt');
   const [backgroundImage, setBackgroundImage] = React.useState<File | null>(null);
   const [backgroundImageUrl, setBackgroundImageUrl] = React.useState<string | null>(null);
   const [isOptimizing, setIsOptimizing] = React.useState<boolean>(false);
+  const [fusionParams, setFusionParams] = React.useState<FusionParams>({
+      structure: 0.5,
+      color: 0.5,
+      material: 0.5
+  });
+
+  // Line Art State
+  const [lineArtType, setLineArtType] = React.useState<LineArtType>('engineering');
+  const [detailLevel, setDetailLevel] = React.useState<DetailLevel>('medium');
+  const [lineStyle, setLineStyle] = React.useState<LineStyle>('technical');
+
+  // Multi View State
+  const [multiViewMode, setMultiViewMode] = React.useState<MultiViewMode>('three-view');
+  const [viewPitch, setViewPitch] = React.useState<ViewPitch>(0);
+  const [viewYaw, setViewYaw] = React.useState<ViewYaw>(30);
 
 
   const handleImageUpload = React.useCallback((file: File, dataUrl: string) => {
@@ -57,12 +76,12 @@ const App: React.FC = () => {
     }
 
     if (selectedFeature === 'backgroundChange') {
-        if ((backgroundMode === 'prompt' || backgroundMode === 'hybrid') && !prompt.trim()) {
+        if (backgroundMode === 'prompt' && !prompt.trim()) {
             setError('请输入背景描述。');
             return;
         }
         if ((backgroundMode === 'image' || backgroundMode === 'hybrid') && !backgroundImage) {
-            setError('请上传一张背景图片。');
+            setError(backgroundMode === 'hybrid' ? '请上传参考产品图片。' : '请上传背景图片。');
             return;
         }
     }
@@ -75,7 +94,14 @@ const App: React.FC = () => {
       const result = await generateImage(sourceImage, selectedFeature, {
           userPrompt: prompt,
           backgroundImageFile: backgroundImage,
-          backgroundMode: backgroundMode
+          backgroundMode: backgroundMode,
+          lineArtType,
+          detailLevel,
+          lineStyle,
+          multiViewMode,
+          viewPitch,
+          viewYaw,
+          fusionParams
       });
       setResultImageUrl(result);
     } catch (err) {
@@ -98,7 +124,7 @@ const App: React.FC = () => {
     if (selectedFeature === 'backgroundChange') {
         if (backgroundMode === 'prompt' && !prompt.trim()) return true;
         if (backgroundMode === 'image' && !backgroundImage) return true;
-        if (backgroundMode === 'hybrid' && (!prompt.trim() || !backgroundImage)) return true;
+        if (backgroundMode === 'hybrid' && !backgroundImage) return true;
     }
     return false;
   };
@@ -116,15 +142,16 @@ const App: React.FC = () => {
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
               <div className="bg-white p-6 rounded-lg shadow-[6px_6px_0px_#475569] border-2 border-slate-800">
-                <h2 className="text-xl font-bold mb-4 text-slate-700">1. 上传产品图片</h2>
+                <h2 className="text-xl font-bold mb-4 text-slate-700">1. 上传主体图片</h2>
                 <ImageUploader onImageUpload={handleImageUpload} sourceImageUrl={sourceImageUrl} id="product-image-upload" />
 
                 {selectedFeature === 'backgroundChange' && (
                   <div className="mt-6 space-y-6">
-                      <h2 className="text-xl font-bold text-slate-700">2. 设置背景</h2>
+                      <h2 className="text-xl font-bold text-slate-700">2. 融合模式设置</h2>
                       <BackgroundModeSelector selectedMode={backgroundMode} onSelectMode={setBackgroundMode} disabled={isLoading || isOptimizing} />
                       
-                      {(backgroundMode === 'prompt' || backgroundMode === 'hybrid') && (
+                      {/* Text Mode Options */}
+                      {(backgroundMode === 'prompt') && (
                           <PromptInput 
                               prompt={prompt} 
                               setPrompt={setPrompt} 
@@ -134,15 +161,49 @@ const App: React.FC = () => {
                           />
                       )}
                       
+                      {/* Image / Hybrid Reference Upload */}
                       {(backgroundMode === 'image' || backgroundMode === 'hybrid') && (
                           <div>
                               <label className="block text-sm font-medium text-slate-700 mb-1">
-                                上传参考背景图
+                                {backgroundMode === 'hybrid' ? '上传参考特征图片 (被融合对象)' : '上传参考背景图'}
                               </label>
                               <ImageUploader onImageUpload={handleBackgroundImageUpload} sourceImageUrl={backgroundImageUrl} id="background-image-upload" />
                           </div>
                       )}
+
+                      {/* Hybrid Specific Options */}
+                      {backgroundMode === 'hybrid' && (
+                         <ProductFusionSettings 
+                            params={fusionParams}
+                            setParams={setFusionParams}
+                            disabled={isLoading}
+                         />
+                      )}
                   </div>
+                )}
+
+                {selectedFeature === 'lineArt' && (
+                   <div className="mt-6 space-y-4">
+                      <h2 className="text-xl font-bold text-slate-700">2. 线稿设置</h2>
+                      <LineArtSettings 
+                        lineArtType={lineArtType} setLineArtType={setLineArtType}
+                        detailLevel={detailLevel} setDetailLevel={setDetailLevel}
+                        lineStyle={lineStyle} setLineStyle={setLineStyle}
+                        disabled={isLoading}
+                      />
+                   </div>
+                )}
+
+                {selectedFeature === 'multiView' && (
+                   <div className="mt-6 space-y-4">
+                      <h2 className="text-xl font-bold text-slate-700">2. 视角设置</h2>
+                      <MultiViewSettings 
+                        mode={multiViewMode} setMode={setMultiViewMode}
+                        pitch={viewPitch} setPitch={setViewPitch}
+                        yaw={viewYaw} setYaw={setViewYaw}
+                        disabled={isLoading}
+                      />
+                   </div>
                 )}
                 
                 <button
@@ -158,7 +219,7 @@ const App: React.FC = () => {
                           </svg>
                           生成中...
                       </>
-                  ) : '生成图片'}
+                  ) : (selectedFeature === 'backgroundChange' && backgroundMode === 'hybrid' ? '融合生成新产品' : '生成图片')}
                 </button>
               </div>
               
